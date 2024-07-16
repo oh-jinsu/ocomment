@@ -28,15 +28,9 @@ export const SignInServerAction = ServerAction(async (formData: FormData) => {
 
     const { accessToken, refreshToken } = await SignInUseCase({ username, password });
 
-    cookies().set("accessToken", accessToken, {
-        expires: Number(decodeJwt(accessToken).exp) * 1000,
-        ...DEFAULT_COOKIE_FLAGS,
-    });
+    cookies().set("accessToken", accessToken, DEFAULT_COOKIE_FLAGS);
 
-    cookies().set("refreshToken", refreshToken, {
-        expires: Number(decodeJwt(refreshToken).exp) * 1000,
-        ...DEFAULT_COOKIE_FLAGS,
-    });
+    cookies().set("refreshToken", refreshToken, DEFAULT_COOKIE_FLAGS);
 
     redirect(redirectUrl || "/");
 });

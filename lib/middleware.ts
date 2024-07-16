@@ -58,10 +58,7 @@ export function withAuth(middleware: WithAuthMiddleware): NextMiddleware {
 
             const response = respond(payload);
 
-            response.cookies.set("accessToken", refresh.accessToken, {
-                expires: Number(payload.exp) * 1000,
-                ...DEFAULT_COOKIE_FLAGS,
-            });
+            response.cookies.set("accessToken", refresh.accessToken, DEFAULT_COOKIE_FLAGS);
 
             return response;
         }
