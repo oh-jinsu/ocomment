@@ -5,9 +5,28 @@ import { pgTable } from "drizzle-orm/pg-core";
 export const userTable = pgTable("users", {
     id: uuid("id").primaryKey(),
     name: text("name").notNull(),
+    refreshToken: text("refreshToken"),
     updatedAt: timestamp("updatedAt").defaultNow().notNull(),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
+
+export const credentialTable = pgTable("credentials", {
+    id: uuid("id").primaryKey(),
+    userId: uuid("userId")
+        .notNull()
+        .references(() => userTable.id),
+    username: text("username").notNull(),
+    password: text("password").notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const credentialRelations = relations(credentialTable, ({ one }) => ({
+    user: one(userTable, {
+        fields: [credentialTable.userId],
+        references: [userTable.id],
+    }),
+}));
 
 export const fileTable = pgTable("files", {
     id: uuid("id").primaryKey(),

@@ -13,7 +13,7 @@ export default function SubmitButton({ children, alt, className, ...props }: Pro
     const { pending } = useFormStatus();
 
     return (
-        <button {...props} className={cn(className, buttonStyle)} type="submit">
+        <button {...props} className={cn(className, buttonStyle, "w-full")} type="submit">
             {pending ? alt || "잠시만 기다려 주세요..." : children}
         </button>
     );
