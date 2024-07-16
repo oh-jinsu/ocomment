@@ -22,10 +22,7 @@ export const credentialTable = pgTable("credentials", {
 });
 
 export const credentialRelations = relations(credentialTable, ({ one }) => ({
-    user: one(userTable, {
-        fields: [credentialTable.userId],
-        references: [userTable.id],
-    }),
+    user: one(userTable),
 }));
 
 export const fileTable = pgTable("files", {
@@ -49,11 +46,9 @@ export const websiteTable = pgTable("websites", {
     createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
-export const websiteRelations = relations(websiteTable, ({ one }) => ({
-    user: one(userTable, {
-        fields: [websiteTable.userId],
-        references: [userTable.id],
-    }),
+export const websiteRelations = relations(websiteTable, ({ one, many }) => ({
+    user: one(userTable),
+    comments: many(commentTable)
 }));
 
 export const commentTable = pgTable("comments", {
@@ -61,14 +56,15 @@ export const commentTable = pgTable("comments", {
     userId: uuid("userId")
         .notNull()
         .references(() => userTable.id),
+    websiteId: uuid("websiteId")
+        .notNull()
+        .references(() => websiteTable.id),
     content: text("content").notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().notNull(),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
 export const commentRelations = relations(commentTable, ({ one }) => ({
-    user: one(userTable, {
-        fields: [commentTable.userId],
-        references: [userTable.id],
-    }),
+    user: one(userTable),
+    website: one(websiteTable),
 }));
