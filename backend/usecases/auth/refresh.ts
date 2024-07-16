@@ -1,6 +1,6 @@
 import { data } from "@/backend/db";
 import { UseCase } from "@/backend/usecase";
-import { JWT } from "@/lib/jwt";
+import { AccessToken } from "@/lib/jwt";
 import { compare } from "bcryptjs";
 import { decodeJwt } from "jose";
 
@@ -12,7 +12,7 @@ export type RefreshAuthResult = {
     accessToken: string;
 };
 
-export const RefreshAuthUseCase: UseCase<RefreshAuthParams, RefreshAuthResult> = async ({ refreshToken }) => {
+export const refreshAuthUseCase: UseCase<RefreshAuthParams, RefreshAuthResult> = async ({ refreshToken }) => {
     const { userId } = decodeJwt(refreshToken);
 
     if (typeof userId !== "string") {
@@ -37,11 +37,8 @@ export const RefreshAuthUseCase: UseCase<RefreshAuthParams, RefreshAuthResult> =
         throw Error("토큰이 올바르지 않아요.");
     }
 
-    const accessToken = await new JWT(process.env.ACCESS_TOKEN_SECRET).sign(
+    const accessToken = await new AccessToken().sign(
         { userId: user.id },
-        {
-            expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN || "5s",
-        },
     );
 
     return {

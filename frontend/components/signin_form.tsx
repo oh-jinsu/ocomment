@@ -3,6 +3,7 @@ import SubmitButton from "../submit_button";
 import ActionForm from "./form/action";
 import FormInput from "./form/input";
 import FormLabel from "./form/label";
+import RedirectUrlInput from "./form/redirect_input";
 
 export default function SignInForm() {
     return (
@@ -12,6 +13,7 @@ export default function SignInForm() {
             <FormLabel>비밀번호</FormLabel>
             <FormInput name="password" type="password" placeholder="비밀번호를 입력해 주세요." required />
             <SubmitButton>로그인</SubmitButton>
+            <RedirectUrlInput />
         </ActionForm>
     );
 }

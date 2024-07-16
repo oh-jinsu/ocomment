@@ -1,6 +1,6 @@
 import { data, userTable } from "@/backend/db";
 import { UseCase } from "@/backend/usecase";
-import { JWT } from "@/lib/jwt";
+import { AccessToken, RefreshToken } from "@/lib/jwt";
 import { compare, hash } from "bcryptjs";
 import { eq } from "drizzle-orm";
 
@@ -14,7 +14,7 @@ type Result = {
     refreshToken: string;
 };
 
-export const SignInUseCase: UseCase<Params, Result> = async ({ username, password }) => {
+export const signInUseCase: UseCase<Params, Result> = async ({ username, password }) => {
     const credential = await data.query.credentialTable.findFirst({
         where(t, { eq }) {
             return eq(t.username, username);
@@ -39,18 +39,13 @@ export const SignInUseCase: UseCase<Params, Result> = async ({ username, passwor
         throw Error("회원 정보를 찾을 수 없어요.");
     }
 
-    const refreshToken = await new JWT(process.env.REFRESH_TOKEN_SECRET).sign(
+    const refreshToken = await new RefreshToken().sign(
         { userId: user.id },
-        {
-            expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || "1y",
-        },
+
     );
 
-    const accessToken = await new JWT(process.env.ACCESS_TOKEN_SECRET).sign(
+    const accessToken = await new AccessToken().sign(
         { userId: user.id },
-        {
-            expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN || "5s",
-        },
     );
 
     await data

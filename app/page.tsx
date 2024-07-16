@@ -5,9 +5,9 @@ import SubmitButton from "@/frontend/submit_button";
 
 export default function Home() {
     return (
-        <form>
+        <form action="/create-website">
             <FormLabel>웹사이트 이름</FormLabel>
-            <FormInput name="name" type="text" placeholder="website" className={inputStyle}></FormInput>
+            <FormInput name="name" type="text" placeholder="website" className={inputStyle} required></FormInput>
             <SubmitButton>댓글 섹션 생성하기</SubmitButton>
         </form>
     );

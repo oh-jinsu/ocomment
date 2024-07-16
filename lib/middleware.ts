@@ -1,6 +1,6 @@
 import { decodeJwt, JWTPayload } from "jose";
 import { NextFetchEvent, NextMiddleware, NextRequest, NextResponse } from "next/server";
-import { JWT } from "./jwt";
+import { AccessToken, JWT } from "./jwt";
 import { refreshAuthAPI } from "@/backend/api/auth/refresh";
 import { APIException } from "@/backend/api/client";
 import { DEFAULT_COOKIE_FLAGS } from "./cookie";
@@ -30,7 +30,7 @@ export function withAuth(middleware: WithAuthMiddleware): NextMiddleware {
         const accessToken = req.cookies.get("accessToken")?.value;
 
         if (accessToken) {
-            const payload = await new JWT(process.env.ACCESS_TOKEN_SECRET).verify(accessToken);
+            const payload = await new AccessToken().verify(accessToken);
 
             if (payload) {
                 return respond(payload);
@@ -47,7 +47,7 @@ export function withAuth(middleware: WithAuthMiddleware): NextMiddleware {
             return result;
         }
 
-        const refresh = await refreshAuthAPI.fetchFromServer(req, {
+        const refresh = await refreshAuthAPI.fetchFromServer(req.nextUrl.origin, {
             headers: {
                 Authorization: `Bearer ${refreshToken}`,
             },

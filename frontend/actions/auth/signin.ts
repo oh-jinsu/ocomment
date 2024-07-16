@@ -1,11 +1,10 @@
 "use server";
 
-import { SignInUseCase } from "@/backend/usecases/auth/signin";
+import { signInUseCase } from "@/backend/usecases/auth/signin";
 import { ServerAction } from "../action";
 import { cookies } from "next/headers";
 import { DEFAULT_COOKIE_FLAGS } from "@/lib/cookie";
 import { redirect } from "next/navigation";
-import { decodeJwt } from "jose";
 
 export const SignInServerAction = ServerAction(async (formData: FormData) => {
     const username = formData.get("username");
@@ -26,7 +25,7 @@ export const SignInServerAction = ServerAction(async (formData: FormData) => {
         throw new Error("경로가 올바르지 않아요.");
     }
 
-    const { accessToken, refreshToken } = await SignInUseCase({ username, password });
+    const { accessToken, refreshToken } = await signInUseCase({ username, password });
 
     cookies().set("accessToken", accessToken, DEFAULT_COOKIE_FLAGS);
 

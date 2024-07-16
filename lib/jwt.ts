@@ -1,12 +1,7 @@
 import { JWTPayload, SignJWT, jwtVerify } from "jose";
 
-export type JWTInput = {
-    issuer?: string;
-    expiresIn?: string;
-}
-
 export class JWT {
-    private secret: string;
+    protected secret: string;
 
     constructor(secret?: string) {
         if (!secret) {
@@ -15,28 +10,6 @@ export class JWT {
 
         this.secret = secret;
     }
-
-    async sign(
-        payload: JWTPayload = {},
-        {
-            issuer,
-            expiresIn,
-        }: JWTInput = {},
-    ) {
-        const jwt = new SignJWT(payload)
-            .setProtectedHeader({ alg: "HS256", typ: "JWT" })
-
-            .setIssuedAt();
-
-        if (issuer) {
-            jwt.setIssuer(issuer);
-        }
-        if (expiresIn) {
-            jwt.setExpirationTime(expiresIn);
-        }
-
-        return jwt.setIssuedAt().sign(new TextEncoder().encode(this.secret));
-    };
 
     async verify(token: string) {
         try {
@@ -49,4 +22,38 @@ export class JWT {
             return;
         }
     };
+}
+
+export type AuthTokenPayload = JWTPayload & {
+    userId: string;
+}
+
+export class AccessToken extends JWT {
+    constructor() {
+        super(process.env.ACCESS_TOKEN_SECRET)
+    }
+
+    async sign(payload: AuthTokenPayload) {
+        return new SignJWT(payload)
+            .setProtectedHeader({ alg: "HS256", typ: "JWT" })
+            .setIssuer(process.env.NEXT_PUBLIC_ORIGIN!)
+            .setExpirationTime(
+                process.env.ACCESS_TOKEN_EXPIRES_IN || "5s",
+            ).setIssuedAt().sign(new TextEncoder().encode(this.secret))
+    }
+}
+
+export class RefreshToken extends JWT {
+    constructor() {
+        super(process.env.REFRESH_TOKEN_SECRET)
+    }
+
+    async sign(payload: AuthTokenPayload) {
+        return new SignJWT(payload)
+            .setProtectedHeader({ alg: "HS256", typ: "JWT" })
+            .setIssuer(process.env.NEXT_PUBLIC_ORIGIN!)
+            .setExpirationTime(
+                process.env.REFRESH_TOKEN_EXPIRES_IN || "7d",
+            ).setIssuedAt().sign(new TextEncoder().encode(this.secret))
+    }
 }
