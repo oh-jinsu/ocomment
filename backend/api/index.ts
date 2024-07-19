@@ -78,8 +78,6 @@ export class API<RequestBody, ResponseBody, Context = void> {
                 const result = await this.handler(...args);
 
                 if (result instanceof Response) {
-                    result.headers.set("Cache-Control", "no-store");
-
                     return result;
                 }
 
@@ -92,8 +90,6 @@ export class API<RequestBody, ResponseBody, Context = void> {
                 }
 
                 if (e instanceof Response) {
-                    e.headers.set("Cache-Control", "no-store");
-                    
                     return e;
                 }
 
